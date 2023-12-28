@@ -14,31 +14,29 @@ export class ProductService {
 
     async create(createProductDto: CreateProductDto) {
         const product = new this.productModel(createProductDto);
-        return await product.save();
+        return product.save();
     }
 
     async findAll(): Promise<ProductDocument[]> {
-        const products = await this.productModel.find().exec();
-        return products;
+        return this.productModel.find().exec();
     }
 
-    async findOne(id: string): Promise<ProductDocument> {
-        const product = await this.productModel.findById(id);
-        return product;
+    async findById(id: string): Promise<ProductDocument> {
+        return this.productModel.findById(id);
     }
 
     async update(id: string, updateProductDto: UpdateProductDto) {
-        const updatedData = await this.productModel
+        return this.productModel
             .findByIdAndUpdate(id, updateProductDto, { new: true });
-        return updatedData;
     }
 
     async remove(id: string) {
-        return await this.productModel.findByIdAndDelete(id);
+        return this.productModel.findByIdAndDelete(id);
     }
 
     async findByName(keyword: string): Promise<ProductDocument[]> {
-        const products = this.productModel.find({ name: { $regex: new RegExp(keyword, 'i') } }).exec();
-        return products;
+        return this.productModel
+            .find({ name: { $regex: new RegExp(keyword, 'i') } })
+            .exec();
     }
 }

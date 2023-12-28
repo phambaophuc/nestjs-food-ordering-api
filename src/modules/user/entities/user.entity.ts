@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Exclude } from "class-transformer";
+import mongoose from "mongoose";
+import { Order } from "src/modules/order/entities/order.entity";
 
 export type UserDocument = User & Document;
 
@@ -12,7 +13,6 @@ export class User {
     @Prop({ required: true })
     username: string;
 
-    @Exclude()
     @Prop({ required: true })
     password: string;
 
@@ -24,6 +24,9 @@ export class User {
 
     @Prop()
     phoneNumber: string;
+
+    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }] })
+    orders: Order[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

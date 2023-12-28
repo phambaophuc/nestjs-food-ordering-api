@@ -14,7 +14,7 @@ import { User, UserSchema } from '../user/entities/user.entity';
         UserModule, PassportModule,
         JwtModule.registerAsync({
             useFactory: async () => ({
-                secret: process.env.SECRET_KEY,
+                secret: process.env.JWT_SECRET,
                 signOptions: { expiresIn: '60s' },
             }),
         }),

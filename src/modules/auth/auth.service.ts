@@ -2,18 +2,17 @@ import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class AuthService {
 
     constructor(
-        private readonly usersService: UserService,
+        private readonly userService: UserService,
         private jwtService: JwtService
     ) { }
 
     async validateUser(username: string, password: string): Promise<any> {
-        const user = await this.usersService.getUser({ username });
+        const user = await this.userService.findOne({ username });
         if (!user) return null;
         const passwordValid = await bcrypt.compare(password, user.password)
         if (!user) {
@@ -25,8 +24,8 @@ export class AuthService {
         return null;
     }
 
-    async login(user: User) {
-        const payload = { user: user };
+    async login(user: any) {
+        const payload = { sub: user._id, username: user.username };
         return {
             access_token: this.jwtService.sign(payload),
         };
