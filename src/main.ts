@@ -10,11 +10,13 @@ async function bootstrap() {
         .setTitle('Api v1')
         .setVersion('1.0')
         .build();
-    const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('swagger', app, document);
 
     app.setGlobalPrefix('api/v1');
     app.useGlobalPipes(new ValidationPipe());
+
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('swagger', app, document);
+
     await app.listen(3000);
 }
 bootstrap();
