@@ -10,6 +10,7 @@ import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { OrderModule } from './modules/order/order.module';
 import { TableModule } from './modules/table/table.module';
+import { SocketGateway } from './socket/socket.gateway';
 
 @Module({
     imports: [
@@ -28,6 +29,6 @@ import { TableModule } from './modules/table/table.module';
         TableModule,
     ],
     controllers: [AppController],
-    providers: [AppService],
+    providers: [AppService, SocketGateway],
 })
 export class AppModule { }

@@ -7,7 +7,10 @@ import { ApiTags } from '@nestjs/swagger';
 @Controller('product')
 @ApiTags('product')
 export class ProductController {
-    constructor(private readonly productService: ProductService) { }
+
+    constructor(
+        private readonly productService: ProductService
+    ) { }
 
     @Post()
     async create(@Body() createProductDto: CreateProductDto) {
@@ -31,7 +34,12 @@ export class ProductController {
 
     @Patch(':id')
     async update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-        return this.productService.update(id, updateProductDto);
+        try {
+            const updatedProduct = await this.productService.update(id, updateProductDto);
+            return { message: 'Product Updated Successfully!', updatedProduct };
+        } catch (error) {
+            return { message: 'Có lỗi xảy ra', error: error.message };
+        }
     }
 
     @Delete(':id')

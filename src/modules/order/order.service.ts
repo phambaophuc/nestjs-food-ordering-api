@@ -18,11 +18,13 @@ export class OrderService {
         return this.orderModel.find().exec();
     }
 
-    async findById(id: string): Promise<OrderDocument> {
-        return this.orderModel.findById(id).exec();
+    async findByCustomer(customer: string) {
+        return this.orderModel.find({ 'customer': customer }).exec();
     }
 
-    async findByCustomer(customer: string) {
-        return await this.orderModel.find({ 'customer': customer }).exec();
+    async changeStatus(id: string, status: string): Promise<OrderDocument> {
+        const order = await this.orderModel.findById(id).exec();
+        order.status = status;
+        return this.orderModel.findByIdAndUpdate(id, order);
     }
 }

@@ -1,31 +1,42 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, Put } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { SocketGateway } from 'src/socket/socket.gateway';
 
 @Controller('order')
 @ApiTags('order')
 export class OrderController {
 
-    constructor(private readonly orderService: OrderService) { }
+    constructor(
+        private readonly orderService: OrderService,
+        private socketGateway: SocketGateway
+    ) { }
 
     @Post()
     async create(@Body() createOrderDto: CreateOrderDto) {
-        return await this.orderService.create(createOrderDto);
+        const newOrder = await this.orderService.create(createOrderDto);
+        this.socketGateway.sendNewOrder(newOrder);
+        return newOrder;
     }
 
     @Get()
     async findAll() {
-        return await this.orderService.findAll();
-    }
-
-    @Get(':id')
-    async findById(@Param('id') id: string) {
-        return await this.orderService.findById(id);
+        return this.orderService.findAll();
     }
 
     @Get('/customer/:customerId')
     async findByCustomer(@Param('customerId') customerId: string) {
-        return await this.orderService.findByCustomer(customerId);
+        return this.orderService.findByCustomer(customerId);
+    }
+
+    @Put('/:id/change-status')
+    async changeStatus(@Param('id') id: string, @Query('status') status: string) {
+        try {
+            await this.orderService.changeStatus(id, status);
+            return { message: `Đã thay đổi trạng thái thành ${status}.` };
+        } catch (error) {
+            return { message: 'Có lỗi xảy ra', error: error.message };
+        }
     }
 }
