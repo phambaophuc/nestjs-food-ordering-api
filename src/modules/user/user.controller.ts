@@ -1,12 +1,24 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('user')
+@ApiTags('user')
 export class UserController {
 
     constructor(private readonly userService: UserService) { }
+
+    @Get('/:id')
+    async getUserById(@Param('id') id: string) {
+        const user = await this.userService.findById(id);
+        if (user !== null) {
+            return user;
+        } else {
+            return { message: 'User not found.' };
+        }
+    }
 
     @Post('/signup')
     async createUser(@Body() createUserDto: CreateUserDto) {

@@ -15,11 +15,11 @@ export class OrderService {
     }
 
     async findAll(): Promise<OrderDocument[]> {
-        return this.orderModel.find().exec();
+        return this.orderModel.find().sort({ createdAt: 'desc' }).exec();
     }
 
-    async findByCustomer(customer: string) {
-        return this.orderModel.find({ 'customer': customer }).exec();
+    async findById(id: string): Promise<OrderDocument> {
+        return this.orderModel.findById(id).exec();
     }
 
     async changeStatus(id: string, status: string): Promise<OrderDocument> {

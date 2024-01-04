@@ -24,9 +24,6 @@ export class User {
 
     @Prop()
     phoneNumber: string;
-
-    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }] })
-    orders: Order[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

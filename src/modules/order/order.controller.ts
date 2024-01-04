@@ -25,15 +25,14 @@ export class OrderController {
         return this.orderService.findAll();
     }
 
-    @Get('/customer/:customerId')
-    async findByCustomer(@Param('customerId') customerId: string) {
-        return this.orderService.findByCustomer(customerId);
-    }
-
     @Put('/:id/change-status')
     async changeStatus(@Param('id') id: string, @Query('status') status: string) {
         try {
             await this.orderService.changeStatus(id, status);
+
+            const updatedOrder = await this.orderService.findById(id);
+            this.socketGateway.sendOrderStatusUpdate(updatedOrder);
+
             return { message: `Đã thay đổi trạng thái thành ${status}.` };
         } catch (error) {
             return { message: 'Có lỗi xảy ra', error: error.message };

@@ -10,9 +10,6 @@ export class Table {
 
     @Prop({ default: 'available', enum: ['available', 'reserved', 'occupied'] })
     status: string;
-
-    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-    userId: string;
 }
 
 export const TableSchema = SchemaFactory.createForClass(Table);

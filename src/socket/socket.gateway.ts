@@ -14,4 +14,8 @@ export class SocketGateway {
     sendNewOrder(order: any) {
         this.server.emit('newOrder', order);
     }
+
+    sendOrderStatusUpdate(updatedOrder: any) {
+        this.server.emit('orderStatusUpdate', updatedOrder);
+    }
 }

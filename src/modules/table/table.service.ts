@@ -17,7 +17,7 @@ export class TableService {
         return tables;
     }
 
-    async reserveTable(tableNumber: number, userId: string): Promise<TableDocument> {
+    async reserveTable(tableNumber: number): Promise<TableDocument> {
         const table = await this.tableModel.findOne({ tableNumber }).exec();
         if (!table) {
             throw new NotFoundException(`Table with number ${tableNumber} not found`);
@@ -28,7 +28,6 @@ export class TableService {
         }
 
         table.status = 'reserved';
-        table.userId = userId;
 
         return table.save();
     }
@@ -44,7 +43,6 @@ export class TableService {
         }
 
         table.status = 'occupied';
-        table.userId = null;
 
         return table.save();
     }
@@ -56,7 +54,6 @@ export class TableService {
         }
 
         table.status = 'available';
-        table.userId = null;
 
         return table.save();
     }
