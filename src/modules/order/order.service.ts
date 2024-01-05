@@ -15,7 +15,18 @@ export class OrderService {
     }
 
     async findAll(): Promise<OrderDocument[]> {
-        return this.orderModel.find().sort({ createdAt: 'desc' }).exec();
+        return this.orderModel.find({ status: { $nin: ['completed', 'cancelled'] } })
+            .sort({ createdAt: 'desc' }).exec();
+    }
+
+    async findAllOrderCompleted(): Promise<OrderDocument[]> {
+        return this.orderModel.find({ status: 'completed' })
+            .sort({ createdAt: 'desc' }).exec();
+    }
+
+    async findAllOrderCancelled(): Promise<OrderDocument[]> {
+        return this.orderModel.find({ status: 'cancelled' })
+            .sort({ createdAt: 'desc' }).exec();
     }
 
     async findById(id: string): Promise<OrderDocument> {

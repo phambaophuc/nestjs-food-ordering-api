@@ -25,6 +25,16 @@ export class OrderController {
         return this.orderService.findAll();
     }
 
+    @Get('/completed')
+    async findAllOrderCompleted() {
+        return this.orderService.findAllOrderCompleted();
+    }
+
+    @Get('/cancelled')
+    async findAllOrderCancelled() {
+        return this.orderService.findAllOrderCancelled();
+    }
+
     @Put('/:id/change-status')
     async changeStatus(@Param('id') id: string, @Query('status') status: string) {
         try {
