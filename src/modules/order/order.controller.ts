@@ -25,6 +25,15 @@ export class OrderController {
         return this.orderService.findAll();
     }
 
+    @Get('/cache/:tableNumber')
+    async findAllInCache(@Param('tableNumber') tableNumber: number) {
+        const data = await this.orderService.findAllInCache(tableNumber);
+        if (data) {
+            return data;
+        }
+        return { message: 'Không tìm thấy dữ liệu trong cache!' };
+    }
+
     @Get('/table-number/:number')
     async findByTableNumber(@Param('number') tableNumber: number) {
         return this.orderService.findByTableNumber(tableNumber);

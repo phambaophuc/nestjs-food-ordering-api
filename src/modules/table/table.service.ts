@@ -1,12 +1,17 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Table, TableDocument } from './entities/table.entity';
 import { Model } from 'mongoose';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class TableService {
 
-    constructor(@InjectModel(Table.name) private readonly tableModel: Model<TableDocument>) { }
+    constructor(
+        @InjectModel(Table.name) private readonly tableModel: Model<TableDocument>,
+        @Inject(CACHE_MANAGER) private cacheService: Cache,
+    ) { }
 
     async findAll(): Promise<TableDocument[]> {
         return this.tableModel.find().exec();
@@ -28,6 +33,7 @@ export class TableService {
         }
 
         table.status = 'reserved';
+        await this.cacheService.del(`order_${tableNumber}`);
 
         return table.save();
     }

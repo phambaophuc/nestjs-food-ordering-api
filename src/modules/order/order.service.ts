@@ -1,17 +1,34 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { OrderDocument } from './entities/order.entity';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class OrderService {
 
-    constructor(@InjectModel('Order') private readonly orderModel: Model<OrderDocument>) { }
+    constructor(
+        @InjectModel('Order') private readonly orderModel: Model<OrderDocument>,
+        @Inject(CACHE_MANAGER) private cacheService: Cache,
+    ) { }
 
     async create(createOrderDto: CreateOrderDto) {
         const order = new this.orderModel(createOrderDto);
-        return order.save();
+
+        const existingOrders: any = await this.cacheService.get(`order_${order.tableNumber}`);
+        const expireTimeInMilliseconds = 3600 * 1000;
+
+        if (existingOrders) {
+            existingOrders.push(order);
+            await this.cacheService.set(`order_${order.tableNumber}`, existingOrders, expireTimeInMilliseconds);
+        } else {
+            await this.cacheService.set(`order_${order.tableNumber}`, [order], expireTimeInMilliseconds);
+        }
+
+        const savedOrder = await order.save();
+        return savedOrder;
     }
 
     async findAll(): Promise<OrderDocument[]> {
@@ -35,6 +52,12 @@ export class OrderService {
 
     async findByTableNumber(tableNumber: number): Promise<OrderDocument[]> {
         return this.orderModel.find({ tableNumber: tableNumber }).exec();
+    }
+
+    async findAllInCache(tableNumber: number): Promise<OrderDocument[]> {
+        const cached = await this.cacheService
+            .get<OrderDocument[]>(`order_${tableNumber}`);
+        return cached;
     }
 
     async changeStatus(id: string, status: string): Promise<OrderDocument> {
