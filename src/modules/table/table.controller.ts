@@ -28,7 +28,7 @@ export class TableController {
         }
     }
 
-    @Post('reserve/:tableNumber/:userId')
+    @Post('reserve/:tableNumber')
     async reserveTable(@Param('tableNumber') tableNumber: number) {
         try {
             const reservedTable = await this.tableService.reserveTable(tableNumber);

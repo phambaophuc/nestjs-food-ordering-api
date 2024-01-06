@@ -33,6 +33,10 @@ export class OrderService {
         return this.orderModel.findById(id).exec();
     }
 
+    async findByTableNumber(tableNumber: number): Promise<OrderDocument[]> {
+        return this.orderModel.find({ tableNumber: tableNumber }).exec();
+    }
+
     async changeStatus(id: string, status: string): Promise<OrderDocument> {
         const order = await this.orderModel.findById(id).exec();
         order.status = status;

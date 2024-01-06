@@ -25,6 +25,11 @@ export class OrderController {
         return this.orderService.findAll();
     }
 
+    @Get('/table-number/:number')
+    async findByTableNumber(@Param('number') tableNumber: number) {
+        return this.orderService.findByTableNumber(tableNumber);
+    }
+
     @Get('/completed')
     async findAllOrderCompleted() {
         return this.orderService.findAllOrderCompleted();
