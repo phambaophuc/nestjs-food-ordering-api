@@ -27,6 +27,15 @@ export class ProductController {
         return this.productService.findByName(keyword);
     }
 
+    @Get('search/:type')
+    async findByType(@Param('type') type: string) {
+        const product = await this.productService.findByType(type);
+        if (product.length !== 0) {
+            return product;
+        }
+        return { message: 'Không tìm thấy sản phẩm có loại ' + type };
+    }
+
     @Get(':id')
     async findOne(@Param('id') id: string) {
         return this.productService.findById(id);

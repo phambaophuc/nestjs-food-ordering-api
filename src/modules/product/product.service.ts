@@ -35,6 +35,10 @@ export class ProductService {
         return product;
     }
 
+    async findByType(type: string): Promise<ProductDocument[]> {
+        return this.productModel.find({ type: type }).exec();
+    }
+
     async update(id: string, updateProductDto: UpdateProductDto) {
         return this.productModel
             .findByIdAndUpdate(id, updateProductDto, { new: true });
