@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Exclude } from "class-transformer";
 
 export type ProductDocument = Product & Document;
 
@@ -20,9 +21,11 @@ export class Product {
     @Prop({ required: true })
     type: string;
 
+    @Exclude({ toPlainOnly: true })
     @Prop({ type: Date })
     createdAt: Date;
 
+    @Exclude({ toPlainOnly: true })
     @Prop({ type: Date })
     updatedAt: Date;
 }

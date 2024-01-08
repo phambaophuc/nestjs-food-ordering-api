@@ -6,6 +6,7 @@ import { OrderDocument } from './entities/order.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { TableService } from '../table/table.service';
+import { ProductService } from '../product/product.service';
 
 @Injectable()
 export class OrderService {
@@ -13,7 +14,8 @@ export class OrderService {
     constructor(
         @InjectModel('Order') private readonly orderModel: Model<OrderDocument>,
         @Inject(CACHE_MANAGER) private cacheService: Cache,
-        private readonly tableService: TableService
+        private readonly tableService: TableService,
+        private readonly productService: ProductService
     ) { }
 
     async create(createOrderDto: CreateOrderDto) {
@@ -21,9 +23,10 @@ export class OrderService {
         return order.save();
     }
 
-    async findAll(): Promise<OrderDocument[]> {
-        return this.orderModel.find({ status: { $nin: ['completed', 'cancelled'] } })
+    async findAll(): Promise<any[]> {
+        const orders = await this.orderModel.find({ status: { $nin: ['completed', 'cancelled'] } })
             .sort({ createdAt: 'desc' }).exec();
+        return orders;
     }
 
     async findAllOrderCompleted(): Promise<OrderDocument[]> {
@@ -40,13 +43,31 @@ export class OrderService {
         return this.orderModel.findById(id).exec();
     }
 
-    async findByTableNumber(tableNumber: number): Promise<OrderDocument[]> {
+    async findByTableNumber(tableNumber: number): Promise<any[]> {
         const table = await this.tableService.findByNumber(tableNumber);
         const orders = await this.orderModel.find({
             tableNumber,
             createdAt: { $gt: table.updatedAt }
         }).exec();
-        return orders;
+
+        const ordersWithProductInfo = await Promise.all(
+            orders.map(async (order) => {
+                const itemsWithProductInfo = await this.processItems(order.items);
+                return { ...order.toObject(), items: itemsWithProductInfo };
+            })
+        );
+        return ordersWithProductInfo;
+    }
+
+    private async processItems(items: { productId: string, quantity: number }[]): Promise<{ productInfo: any, quantity: number }[]> {
+        return Promise.all(items.map(async (item) => {
+            const productInfo = await this.getProductInfo(item.productId);
+            return { productInfo, quantity: item.quantity };
+        }));
+    }
+
+    private async getProductInfo(productId: string): Promise<any> {
+        return this.productService.findById(productId);
     }
 
     async changeStatus(id: string, status: string): Promise<OrderDocument> {
