@@ -1,15 +1,10 @@
-import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 
-@WebSocketGateway({ cors: true })
+@WebSocketGateway({ cors: true, transports: ['websocket'] })
 export class SocketGateway {
 
     @WebSocketServer() server: Server;
-
-    @SubscribeMessage('message')
-    handleMessage(client: any, payload: any): void {
-        this.server.emit('message', payload);
-    }
 
     sendNewOrder(order: any) {
         this.server.emit('newOrder', order);

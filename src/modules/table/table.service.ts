@@ -4,6 +4,7 @@ import { Table, TableDocument } from './entities/table.entity';
 import { Model } from 'mongoose';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { CreateTableDto } from './dto/create-table.dto';
 
 @Injectable()
 export class TableService {
@@ -13,8 +14,17 @@ export class TableService {
         @Inject(CACHE_MANAGER) private cacheService: Cache,
     ) { }
 
+    async create(createTableDto: CreateTableDto): Promise<CreateTableDto> {
+        const table = new this.tableModel(createTableDto);
+        return table.save();
+    }
+
     async findAll(): Promise<TableDocument[]> {
         return this.tableModel.find().exec();
+    }
+
+    async findByNumber(number: number): Promise<TableDocument> {
+        return this.tableModel.findOne({ tableNumber: number }).exec();
     }
 
     async getTablesByStatus(status: string): Promise<TableDocument[]> {

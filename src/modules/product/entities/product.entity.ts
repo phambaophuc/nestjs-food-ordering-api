@@ -20,6 +20,11 @@ export class Product {
     @Prop({ required: true })
     type: string;
 
+    @Prop({ type: Date })
+    createdAt: Date;
+
+    @Prop({ type: Date })
+    updatedAt: Date;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

@@ -14,6 +14,12 @@ export class Order {
 
     @Prop({ default: 'pending' })
     status: string;
+
+    @Prop({ type: Date })
+    createdAt: Date;
+
+    @Prop({ type: Date })
+    updatedAt: Date;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);

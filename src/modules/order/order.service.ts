@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { OrderDocument } from './entities/order.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { TableService } from '../table/table.service';
 
 @Injectable()
 export class OrderService {
@@ -12,23 +13,12 @@ export class OrderService {
     constructor(
         @InjectModel('Order') private readonly orderModel: Model<OrderDocument>,
         @Inject(CACHE_MANAGER) private cacheService: Cache,
+        private readonly tableService: TableService
     ) { }
 
     async create(createOrderDto: CreateOrderDto) {
         const order = new this.orderModel(createOrderDto);
-
-        const existingOrders: any = await this.cacheService.get(`order_${order.tableNumber}`);
-        const expireTimeInMilliseconds = 3600 * 1000;
-
-        if (existingOrders) {
-            existingOrders.push(order);
-            await this.cacheService.set(`order_${order.tableNumber}`, existingOrders, expireTimeInMilliseconds);
-        } else {
-            await this.cacheService.set(`order_${order.tableNumber}`, [order], expireTimeInMilliseconds);
-        }
-
-        const savedOrder = await order.save();
-        return savedOrder;
+        return order.save();
     }
 
     async findAll(): Promise<OrderDocument[]> {
@@ -51,13 +41,12 @@ export class OrderService {
     }
 
     async findByTableNumber(tableNumber: number): Promise<OrderDocument[]> {
-        return this.orderModel.find({ tableNumber: tableNumber }).exec();
-    }
-
-    async findAllInCache(tableNumber: number): Promise<OrderDocument[]> {
-        const cached = await this.cacheService
-            .get<OrderDocument[]>(`order_${tableNumber}`);
-        return cached;
+        const table = await this.tableService.findByNumber(tableNumber);
+        const orders = await this.orderModel.find({
+            tableNumber,
+            createdAt: { $gt: table.updatedAt }
+        }).exec();
+        return orders;
     }
 
     async changeStatus(id: string, status: string): Promise<OrderDocument> {

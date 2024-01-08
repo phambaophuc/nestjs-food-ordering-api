@@ -4,9 +4,11 @@ import { OrderController } from './order.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Order, OrderSchema } from './entities/order.entity';
 import { SocketGateway } from 'src/socket/socket.gateway';
+import { TableModule } from '../table/table.module';
 
 @Module({
     imports: [
+        TableModule,
         MongooseModule.forFeature([
             {
                 name: Order.name,
