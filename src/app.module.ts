@@ -11,6 +11,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { OrderModule } from './modules/order/order.module';
 import { TableModule } from './modules/table/table.module';
 import { SocketGateway } from './socket/socket.gateway';
+import { ReviewModule } from './modules/review/review.module';
 
 @Module({
     imports: [
@@ -27,6 +28,7 @@ import { SocketGateway } from './socket/socket.gateway';
         AuthModule,
         OrderModule,
         TableModule,
+        ReviewModule,
     ],
     controllers: [AppController],
     providers: [AppService, SocketGateway],
