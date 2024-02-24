@@ -10,6 +10,9 @@ export class Table {
     @Prop({ default: 'available', enum: ['available', 'reserved', 'occupied'] })
     status: string;
 
+    @Prop()
+    bookingTime: string;
+
     @Prop({ type: Date })
     createdAt: Date;
 

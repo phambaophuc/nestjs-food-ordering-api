@@ -6,6 +6,9 @@ export type ReviewDocument = Review & Document;
 @Schema({ timestamps: true })
 export class Review {
     @Prop({ required: true })
+    customer: string;
+
+    @Prop({ required: true })
     rating: number;
 
     @Prop({ required: true })

@@ -36,9 +36,9 @@ export class TableController {
     }
 
     @Post('reserve/:tableNumber')
-    async reserveTable(@Param('tableNumber') tableNumber: number) {
+    async reserveTable(@Param('tableNumber') tableNumber: number, @Body('bookingTime') bookingTime: string) {
         try {
-            const reservedTable = await this.tableService.reserveTable(tableNumber);
+            const reservedTable = await this.tableService.reserveTable(tableNumber, bookingTime);
             return { message: 'Table reserved successfully', table: reservedTable };
         } catch (error) {
             if (error instanceof NotFoundException) {

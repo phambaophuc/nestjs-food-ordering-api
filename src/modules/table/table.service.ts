@@ -32,7 +32,7 @@ export class TableService {
         return tables;
     }
 
-    async reserveTable(tableNumber: number): Promise<TableDocument> {
+    async reserveTable(tableNumber: number, bookingTime: string): Promise<TableDocument> {
         const table = await this.tableModel.findOne({ tableNumber }).exec();
         if (!table) {
             throw new NotFoundException(`Table with number ${tableNumber} not found`);
@@ -43,6 +43,7 @@ export class TableService {
         }
 
         table.status = 'reserved';
+        table.bookingTime = bookingTime;
         await this.cacheService.del(`order_${tableNumber}`);
 
         return table.save();
