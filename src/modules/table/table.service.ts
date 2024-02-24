@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { CreateTableDto } from './dto/create-table.dto';
+import { BookingTableDto } from './dto/booking-table.dto';
 
 @Injectable()
 export class TableService {
@@ -32,7 +33,7 @@ export class TableService {
         return tables;
     }
 
-    async reserveTable(tableNumber: number, bookingTime: string): Promise<TableDocument> {
+    async reserveTable(tableNumber: number, booking: BookingTableDto): Promise<TableDocument> {
         const table = await this.tableModel.findOne({ tableNumber }).exec();
         if (!table) {
             throw new NotFoundException(`Table with number ${tableNumber} not found`);
@@ -43,7 +44,9 @@ export class TableService {
         }
 
         table.status = 'reserved';
-        table.bookingTime = bookingTime;
+        table.bookingTime = booking.bookingTime;
+        table.customer = booking.customer;
+        table.phoneNumber = booking.phoneNumber;
         await this.cacheService.del(`order_${tableNumber}`);
 
         return table.save();
@@ -70,6 +73,9 @@ export class TableService {
             throw new NotFoundException(`Table with number ${tableNumber} not found`);
         }
 
+        table.bookingTime = undefined;
+        table.customer = undefined;
+        table.phoneNumber = undefined;
         table.status = 'available';
 
         return table.save();

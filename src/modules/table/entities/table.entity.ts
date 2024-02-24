@@ -13,6 +13,12 @@ export class Table {
     @Prop()
     bookingTime: string;
 
+    @Prop()
+    customer: string;
+
+    @Prop()
+    phoneNumber: string;
+
     @Prop({ type: Date })
     createdAt: Date;
 

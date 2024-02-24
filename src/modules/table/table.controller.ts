@@ -2,6 +2,7 @@ import { Body, Controller, Get, NotFoundException, Param, Post } from '@nestjs/c
 import { TableService } from './table.service';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateTableDto } from './dto/create-table.dto';
+import { BookingTableDto } from './dto/booking-table.dto';
 
 @Controller('table')
 @ApiTags('table')
@@ -36,9 +37,9 @@ export class TableController {
     }
 
     @Post('reserve/:tableNumber')
-    async reserveTable(@Param('tableNumber') tableNumber: number, @Body('bookingTime') bookingTime: string) {
+    async reserveTable(@Param('tableNumber') tableNumber: number, @Body() booking: BookingTableDto) {
         try {
-            const reservedTable = await this.tableService.reserveTable(tableNumber, bookingTime);
+            const reservedTable = await this.tableService.reserveTable(tableNumber, booking);
             return { message: 'Table reserved successfully', table: reservedTable };
         } catch (error) {
             if (error instanceof NotFoundException) {
