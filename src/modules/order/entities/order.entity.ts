@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { OrderItemDto } from "../dto/order-item.dto";
+import { OrderStatus } from "src/modules/enums/order-status.enum";
 
 export type OrderDocument = Order & Document;
 
@@ -12,8 +13,8 @@ export class Order {
     @Prop()
     tableNumber: number;
 
-    @Prop({ default: 'pending' })
-    status: string;
+    @Prop({ default: OrderStatus.PENDING, enum: OrderStatus })
+    status: OrderStatus;
 
     @Prop({ type: Date })
     createdAt: Date;

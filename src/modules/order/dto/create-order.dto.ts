@@ -8,7 +8,7 @@ export class CreateOrderDto {
     @IsArray()
     @ValidateNested({ each: true })
     @Type(() => OrderItemDto)
-    @ApiProperty()
+    @ApiProperty({ type: () => [OrderItemDto] })
     items: OrderItemDto[];
 
     @IsNotEmpty()

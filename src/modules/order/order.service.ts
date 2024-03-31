@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -7,6 +7,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { TableService } from '../table/table.service';
 import { ProductService } from '../product/product.service';
+import { OrderStatus } from '../enums/order-status.enum';
 
 @Injectable()
 export class OrderService {
@@ -24,8 +25,7 @@ export class OrderService {
     }
 
     async findAll(): Promise<any[]> {
-        const orders = await this.orderModel.find({ status: { $nin: ['completed', 'cancelled'] } })
-            .sort({ createdAt: 'desc' }).exec();
+        const orders = await this.orderModel.find().sort({ createdAt: 'desc' }).exec();
         return orders;
     }
 
@@ -70,9 +70,12 @@ export class OrderService {
         return this.productService.findById(productId);
     }
 
-    async changeStatus(id: string, status: string): Promise<OrderDocument> {
-        const order = await this.orderModel.findById(id).exec();
-        order.status = status;
-        return this.orderModel.findByIdAndUpdate(id, order);
+    async changeStatus(id: string, status: OrderStatus): Promise<OrderDocument> {
+        const updatedOrder = await this.orderModel.findByIdAndUpdate(id, { status }, { new: true }).exec();
+        if (!updatedOrder) {
+            throw new NotFoundException('Đơn hàng không tồn tại');
+        }
+        return updatedOrder;
     }
+
 }

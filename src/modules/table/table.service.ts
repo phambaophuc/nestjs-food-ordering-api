@@ -6,6 +6,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { CreateTableDto } from './dto/create-table.dto';
 import { BookingTableDto } from './dto/booking-table.dto';
+import { TableStatus } from '../enums/table-status.enum';
 
 @Injectable()
 export class TableService {
@@ -39,11 +40,11 @@ export class TableService {
             throw new NotFoundException(`Table with number ${tableNumber} not found`);
         }
 
-        if (table.status !== 'available') {
+        if (table.status !== TableStatus.AVAILABLE) {
             throw new NotFoundException(`Table with number ${tableNumber} is not available`);
         }
 
-        table.status = 'reserved';
+        table.status = TableStatus.RESERVED;
         table.bookingTime = booking.bookingTime;
         table.customer = booking.customer;
         table.phoneNumber = booking.phoneNumber;
@@ -58,11 +59,11 @@ export class TableService {
             throw new NotFoundException(`Table with number ${tableNumber} not found`);
         }
 
-        if (table.status !== 'available' && table.status !== 'reserved') {
+        if (table.status !== TableStatus.AVAILABLE && table.status !== TableStatus.RESERVED) {
             throw new NotFoundException(`Table with number ${tableNumber} cannot be occupied`);
         }
 
-        table.status = 'occupied';
+        table.status = TableStatus.OCCUPIED;
 
         return table.save();
     }
@@ -76,7 +77,7 @@ export class TableService {
         table.bookingTime = undefined;
         table.customer = undefined;
         table.phoneNumber = undefined;
-        table.status = 'available';
+        table.status = TableStatus.AVAILABLE;
 
         return table.save();
     }

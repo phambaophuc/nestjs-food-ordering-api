@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { TableStatus } from 'src/modules/enums/table-status.enum';
 
 export type TableDocument = Table & Document;
 
@@ -7,8 +8,8 @@ export class Table {
     @Prop({ required: true, unique: true })
     tableNumber: number;
 
-    @Prop({ default: 'available', enum: ['available', 'reserved', 'occupied'] })
-    status: string;
+    @Prop({ default: TableStatus.AVAILABLE, enum: TableStatus })
+    status: TableStatus;
 
     @Prop()
     bookingTime: string;
