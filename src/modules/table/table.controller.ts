@@ -4,8 +4,8 @@ import { ApiTags } from '@nestjs/swagger';
 import { CreateTableDto } from './dto/create-table.dto';
 import { BookingTableDto } from './dto/booking-table.dto';
 
-@Controller('table')
-@ApiTags('table')
+@Controller('tables')
+@ApiTags('tables')
 export class TableController {
 
     constructor(private readonly tableService: TableService) { }

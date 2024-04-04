@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, HttpException, HttpStatus, Delete } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { ApiTags } from '@nestjs/swagger';
@@ -40,6 +40,16 @@ export class OrderController {
             this.socketGateway.sendOrderStatusUpdate(updatedOrder);
 
             return { message: `Thay đổi status thành công.` };
+        } catch (error) {
+            throw new HttpException({ message: 'Có lỗi xảy ra', error: error.message }, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Delete('/:id')
+    async deleteById(@Param('id') id: string) {
+        try {
+            await this.orderService.deleteById(id);
+            return { message: 'Deleted Successful!' };
         } catch (error) {
             throw new HttpException({ message: 'Có lỗi xảy ra', error: error.message }, HttpStatus.INTERNAL_SERVER_ERROR);
         }

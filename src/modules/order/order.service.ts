@@ -78,4 +78,11 @@ export class OrderService {
         return updatedOrder;
     }
 
+    async deleteById(id: string) {
+        const order = await this.orderModel.findById(id);
+        if (!order) {
+            throw new NotFoundException('Đơn hàng không tồn tại');
+        }
+        return this.orderModel.findByIdAndDelete(id);
+    }
 }
