@@ -1,8 +1,11 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS, cross_origin
 import torch
 from transformers import RobertaForSequenceClassification, AutoTokenizer
 
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 # Load pre-trained PhoBERT model and tokenizer
 model = RobertaForSequenceClassification.from_pretrained("wonrax/phobert-base-vietnamese-sentiment")
@@ -28,6 +31,7 @@ def predict_emotion(text):
 
 # API endpoint for emotion prediction
 @app.route('/predict-emotion', methods=['POST'])
+@cross_origin()
 def predict_emotion_api():
     data = request.get_json()
     text = data['text']

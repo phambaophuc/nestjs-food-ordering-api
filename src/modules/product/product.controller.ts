@@ -5,7 +5,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @Controller('products')
-@ApiTags('products')
+@ApiTags('Product Controller')
 export class ProductController {
 
     constructor(

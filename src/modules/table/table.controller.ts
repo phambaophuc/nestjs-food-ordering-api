@@ -5,7 +5,7 @@ import { CreateTableDto } from './dto/create-table.dto';
 import { BookingTableDto } from './dto/booking-table.dto';
 
 @Controller('tables')
-@ApiTags('tables')
+@ApiTags('Table Controller')
 export class TableController {
 
     constructor(private readonly tableService: TableService) { }

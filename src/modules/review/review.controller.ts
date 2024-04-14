@@ -4,7 +4,7 @@ import { CreateReviewDto } from './dto/create-review.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @Controller('reviews')
-@ApiTags('reviews')
+@ApiTags('Review Controller')
 export class ReviewController {
     constructor(private readonly reviewService: ReviewService) { }
 

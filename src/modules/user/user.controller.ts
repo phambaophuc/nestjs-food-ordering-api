@@ -5,10 +5,16 @@ import * as bcrypt from 'bcrypt';
 import { ApiTags } from '@nestjs/swagger';
 
 @Controller('user')
-@ApiTags('user')
+@ApiTags('User Controller')
 export class UserController {
 
     constructor(private readonly userService: UserService) { }
+
+    @Get('/')
+    async getAll() {
+        const users = await this.userService.findAll();
+        return users;
+    }
 
     @Get('/:id')
     async getUserById(@Param('id') id: string) {

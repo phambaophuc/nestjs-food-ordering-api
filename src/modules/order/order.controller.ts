@@ -6,7 +6,7 @@ import { SocketGateway } from 'src/socket/socket.gateway';
 import { OrderStatusDto } from './dto/order-status.dto';
 
 @Controller('orders')
-@ApiTags('orders')
+@ApiTags('Order Controller')
 export class OrderController {
 
     constructor(
