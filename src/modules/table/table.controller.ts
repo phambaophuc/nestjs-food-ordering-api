@@ -4,6 +4,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { CreateTableDto } from './dto/create-table.dto';
 import { BookingTableDto } from './dto/booking-table.dto';
 import { TableStatus } from '../enums/table-status.enum';
+import { TableStatusDto } from './dto/table-status.dto';
 
 @Controller('tables')
 @ApiTags('Table Controller')
@@ -40,16 +41,17 @@ export class TableController {
         }
     }
 
-    @Put('/:tableNumber/:status')
-    async releaseTable(@Param('tableNumber') tableNumber: number, @Param('status') status: string) {
-        status = status.toLowerCase();
+    @Put('/:tableNumber/change-status')
+    async releaseTable(@Param('tableNumber') tableNumber: number, @Body() statusReq: TableStatusDto) {
         try {
-            if (status == TableStatus.RESERVED.toLowerCase()) {
+            if (statusReq.status == TableStatus.RESERVED) {
                 const releasedTable = await this.tableService.releaseTable(tableNumber);
                 return { message: 'Table released successfully', table: releasedTable };
-            } else if (status == TableStatus.OCCUPIED.toLowerCase()) {
+            } else if (statusReq.status == TableStatus.OCCUPIED) {
                 const occupiedTable = await this.tableService.occupyTable(tableNumber);
                 return { message: 'Table occupied successfully', table: occupiedTable };
+            } else {
+                throw new NotFoundException();
             }
         } catch (error) {
             if (error instanceof NotFoundException) {
