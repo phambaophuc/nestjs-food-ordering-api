@@ -29,12 +29,12 @@ export class TableService {
         return this.tableModel.findOne({ tableNumber: number }).exec();
     }
 
-    async getTablesByStatus(status: string): Promise<TableDocument[]> {
-        const tables = await this.tableModel.find({ status }).exec();
-        return tables;
-    }
+    // async getTablesByStatus(status: string): Promise<TableDocument[]> {
+    //     const tables = await this.tableModel.find({ status }).exec();
+    //     return tables;
+    // }
 
-    async reserveTable(tableNumber: number, booking: BookingTableDto): Promise<TableDocument> {
+    async bookingTable(tableNumber: number, booking: BookingTableDto): Promise<TableDocument> {
         const table = await this.tableModel.findOne({ tableNumber }).exec();
         if (!table) {
             throw new NotFoundException(`Table with number ${tableNumber} not found`);

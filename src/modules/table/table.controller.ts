@@ -1,8 +1,9 @@
-import { Body, Controller, Get, NotFoundException, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Param, Post, Put } from '@nestjs/common';
 import { TableService } from './table.service';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateTableDto } from './dto/create-table.dto';
 import { BookingTableDto } from './dto/booking-table.dto';
+import { TableStatus } from '../enums/table-status.enum';
 
 @Controller('tables')
 @ApiTags('Table Controller')
@@ -26,20 +27,10 @@ export class TableController {
         }
     }
 
-    @Get('status/:status')
-    async getTablesByStatus(@Param('status') status: string) {
+    @Put('/:tableNumber/booking')
+    async bookingTable(@Param('tableNumber') tableNumber: number, @Body() booking: BookingTableDto) {
         try {
-            const tables = await this.tableService.getTablesByStatus(status);
-            return tables;
-        } catch (error) {
-            return { message: 'Error fetching tables by status', status: 500 };
-        }
-    }
-
-    @Post('reserve/:tableNumber')
-    async reserveTable(@Param('tableNumber') tableNumber: number, @Body() booking: BookingTableDto) {
-        try {
-            const reservedTable = await this.tableService.reserveTable(tableNumber, booking);
+            const reservedTable = await this.tableService.bookingTable(tableNumber, booking);
             return { message: 'Table reserved successfully', table: reservedTable };
         } catch (error) {
             if (error instanceof NotFoundException) {
@@ -49,24 +40,17 @@ export class TableController {
         }
     }
 
-    @Post('occupy/:tableNumber')
-    async occupyTable(@Param('tableNumber') tableNumber: number) {
+    @Put('/:tableNumber/:status')
+    async releaseTable(@Param('tableNumber') tableNumber: number, @Param('status') status: string) {
+        status = status.toLowerCase();
         try {
-            const occupiedTable = await this.tableService.occupyTable(tableNumber);
-            return { message: 'Table occupied successfully', table: occupiedTable };
-        } catch (error) {
-            if (error instanceof NotFoundException) {
-                return { message: error.message, status: 404 };
+            if (status == TableStatus.RESERVED.toLowerCase()) {
+                const releasedTable = await this.tableService.releaseTable(tableNumber);
+                return { message: 'Table released successfully', table: releasedTable };
+            } else if (status == TableStatus.OCCUPIED.toLowerCase()) {
+                const occupiedTable = await this.tableService.occupyTable(tableNumber);
+                return { message: 'Table occupied successfully', table: occupiedTable };
             }
-            return { message: 'Error occupied table', status: 500 };
-        }
-    }
-
-    @Post('release/:tableNumber')
-    async releaseTable(@Param('tableNumber') tableNumber: number) {
-        try {
-            const releasedTable = await this.tableService.releaseTable(tableNumber);
-            return { message: 'Table released successfully', table: releasedTable };
         } catch (error) {
             if (error instanceof NotFoundException) {
                 return { message: error.message, status: 404 };
