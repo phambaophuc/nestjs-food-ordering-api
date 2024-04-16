@@ -44,7 +44,7 @@ export class TableController {
     @Put('/:tableNumber/change-status')
     async releaseTable(@Param('tableNumber') tableNumber: number, @Body() statusReq: TableStatusDto) {
         try {
-            if (statusReq.status == TableStatus.RESERVED) {
+            if (statusReq.status == TableStatus.AVAILABLE) {
                 const releasedTable = await this.tableService.releaseTable(tableNumber);
                 return { message: 'Table released successfully', table: releasedTable };
             } else if (statusReq.status == TableStatus.OCCUPIED) {
