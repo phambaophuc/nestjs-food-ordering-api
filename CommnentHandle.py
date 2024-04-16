@@ -7,36 +7,36 @@ app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-# Load pre-trained PhoBERT model and tokenizer
+# Tải mô hình và mã thông báo PhoBERT được đào tạo trước
 model = RobertaForSequenceClassification.from_pretrained("wonrax/phobert-base-vietnamese-sentiment")
 tokenizer = AutoTokenizer.from_pretrained("wonrax/phobert-base-vietnamese-sentiment", use_fast=False)
 
-# Define emotion labels
+# Định nghĩa cảm xúc  
 emotion_labels = ["Negative", "Positive", "Neutral"]
 
-# Function to predict emotion from text
+# Dự đoán cảm xúc từ văn bản
 def predict_emotion(text):
-    # Tokenize input text
+    # Mã hóa văn bản đầu vào
     input_ids = torch.tensor([tokenizer.encode(text)])
 
-    # Make prediction
+    # Đưa ra dự đoán
     with torch.no_grad():
         outputs = model(input_ids)
         probabilities = torch.softmax(outputs.logits, dim=-1).squeeze()
 
-    # Get predicted class
+    # Nhận lớp dự đoán
     predicted_class = torch.argmax(probabilities).item()
 
     return emotion_labels[predicted_class]
 
-# API endpoint for emotion prediction
+# API endpoint
 @app.route('/predict-emotion', methods=['POST'])
 @cross_origin()
 def predict_emotion_api():
     data = request.get_json()
     text = data['text']
 
-    # Predict emotion
+    # Dự đoán cảm xúc
     emotion = predict_emotion(text)
 
     return jsonify({'emotion': emotion})
